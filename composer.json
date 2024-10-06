@@ -1,0 +1,19 @@
+{
+	"name": "arafatkn/maintenias",
+	"description": "Maintenias is a WordPress plugin that helps you to manage your maintenance mode.",
+	"type": "project",
+	"license": "GPL-2.0-or-later",
+	"autoload": {
+		"psr-4": {
+			"Arafatkn\\Maintenias\\": "app/"
+		}
+	},
+	"authors": [
+		{
+			"name": "Arafat Islam",
+			"email": "arafatkn@gmail.com"
+		}
+	],
+	"minimum-stability": "beta",
+	"require": {}
+}
