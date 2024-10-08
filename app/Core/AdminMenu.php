@@ -21,19 +21,15 @@ class AdminMenu {
 	 * @return void
 	 */
 	public function init_menu() {
-		global $submenu;
-
-		$slug          = MAINTENIAS_SLUG;
-		$menu_position = 50;
-		$capability    = 'manage_options';
-		$logo_icon     = 'dashicons-privacy';
-
-		add_menu_page( esc_attr__( 'Maintenias', 'maintenias' ), esc_attr__( 'Maintenias', 'maintenias' ), $capability, $slug, [ $this, 'plugin_page' ], $logo_icon, $menu_position );
-
-		if ( current_user_can( $capability ) ) {
-			$submenu[ $slug ][] = [ esc_attr__( 'Dashboard', 'maintenias' ), $capability, 'admin.php?page=' . $slug . '#/' ];
-			$submenu[ $slug ][] = [ esc_attr__( 'Settings', 'maintenias' ), $capability, 'admin.php?page=' . $slug . '#/settings' ];
-		}
+		add_menu_page(
+			esc_attr__( 'Maintenias', 'maintenias' ),
+			esc_attr__( 'Maintenias', 'maintenias' ),
+			'manage_options',
+			MAINTENIAS_SLUG,
+			[ $this, 'plugin_page' ],
+			'dashicons-privacy',
+			50
+		);
 	}
 
 	/**
