@@ -4,6 +4,6 @@ module.exports = {
   ...defaultConfig,
   devServer: {
     ...defaultConfig.devServer,
-    allowedHosts: ["localhost:8881"],
+    allowedHosts: ["localhost:8881", "wp.test"],
   },
 };
