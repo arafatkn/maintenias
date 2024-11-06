@@ -198,6 +198,7 @@ final class Maintenias {
 			$this->container['admin_menu'] = new \Arafatkn\Maintenias\Core\AdminMenu();
 		}
 
+		$this->container['rest_api'] = new \Arafatkn\Maintenias\Core\RestApi();
 		$this->container['assets']   = new \Arafatkn\Maintenias\Core\AssetManager();
 	}
 
@@ -250,7 +251,7 @@ final class Maintenias {
 	 *
 	 * @return bool
 	 */
-	private function is_request( $type ) {
+	private function is_request( $type ): bool {
 		switch ( $type ) {
 			case 'admin':
 				return is_admin();
@@ -278,7 +279,7 @@ final class Maintenias {
 	 *
 	 * @return array
 	 */
-	public function plugin_action_links( $links ) {
+	public function plugin_action_links( $links ): array {
 		$links[] = '<a href="' . admin_url( 'admin.php?page=maintenias#/settings' ) . '">' . __( 'Settings', 'maintenias' ) . '</a>';
 		$links[] = '<a href="https://github.com/arafatkn/wp-maintenias" target="_blank">' . __( 'Documentation', 'maintenias' ) . '</a>';
 
