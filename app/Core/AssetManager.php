@@ -76,7 +76,7 @@ class AssetManager {
 	 * @return void
 	 */
 	public function register_scripts( array $scripts ) {
-		foreach ( $scripts as $handle =>$script ) {
+		foreach ( $scripts as $handle => $script ) {
 			wp_register_script( $handle, $script['src'], $script['deps'], $script['version'], $script['in_footer'] );
 		}
 	}
@@ -94,5 +94,16 @@ class AssetManager {
 
 		wp_enqueue_style( 'maintenias-css' );
 		wp_enqueue_script( 'maintenias-app' );
+
+		wp_add_inline_script(
+			'maintenias-app',
+			'window.mainteniasData = ' . wp_json_encode(
+				[
+					'restUrl' => esc_url_raw( rest_url( 'maintenias/v1/' ) ),
+					'nonce'   => wp_create_nonce( 'wp_rest' ),
+				]
+			) . ';',
+			'before'
+		);
 	}
 }
