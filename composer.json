@@ -15,5 +15,7 @@
 		}
 	],
 	"minimum-stability": "beta",
-	"require": {}
+	"require": {
+		"arafatkn/wrest": "^0.0.1"
+	}
 }
