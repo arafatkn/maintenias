@@ -198,8 +198,9 @@ final class Maintenias {
 			$this->container['admin_menu'] = new \Arafatkn\Maintenias\Core\AdminMenu();
 		}
 
-		$this->container['rest_api'] = new \Arafatkn\Maintenias\Core\RestApi();
-		$this->container['assets']   = new \Arafatkn\Maintenias\Core\AssetManager();
+		$this->container['rest_api']          = new \Arafatkn\Maintenias\Core\RestApi();
+		$this->container['assets']            = new \Arafatkn\Maintenias\Core\AssetManager();
+		$this->container['maintenance_mode'] = new \Arafatkn\Maintenias\Core\MaintenanceMode();
 	}
 
 	/**
