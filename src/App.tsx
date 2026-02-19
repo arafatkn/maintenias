@@ -5,13 +5,6 @@ import { Header } from './components/Header';
 import { Loader } from './components/Loader';
 import { Index, type PageItem, type TemplateItem } from './pages/index';
 
-type Settings = {
-  enabled: boolean;
-  pageId: number;
-  selectionType: 'page' | 'template';
-  templateSlug: string;
-};
-
 declare global {
   interface Window {
     mainteniasData?: {
@@ -21,21 +14,27 @@ declare global {
   }
 }
 
+type Settings = {
+  enabled: boolean;
+  pageId: number;
+  selectionType: 'page' | 'template';
+  templateSlug: string;
+};
+
 const App = () => {
   const [pages, setPages] = useState<PageItem[]>([]);
   const [templates, setTemplates] = useState<TemplateItem[]>([]);
   const [settings, setSettings] = useState<Settings>({
     enabled: false,
     pageId: 0,
-    selectionType: 'page',
+    selectionType: 'template',
     templateSlug: 'classic',
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (window.mainteniasData?.restUrl) {
-      apiFetch.use(apiFetch.createRootURLMiddleware(window.mainteniasData.restUrl));
-    }
+    // const fallbackRestUrl = `${window.location.origin}/wp-json/maintenias/v1/`;
+    // apiFetch.use(apiFetch.createRootURLMiddleware(window.mainteniasData?.restUrl));
 
     if (window.mainteniasData?.nonce) {
       apiFetch.use(apiFetch.createNonceMiddleware(window.mainteniasData.nonce));
@@ -44,9 +43,9 @@ const App = () => {
     const bootstrap = async () => {
       try {
         const [fetchedPages, fetchedSettings, fetchedTemplates] = await Promise.all([
-          apiFetch<PageItem[]>({ path: '/pages' }),
-          apiFetch<Settings>({ path: '/settings' }),
-          apiFetch<TemplateItem[]>({ path: '/templates' }),
+          apiFetch<PageItem[]>({ path: '/maintenias/v1/pages' }),
+          apiFetch<Settings>({ path: '/maintenias/v1/settings' }),
+          apiFetch<TemplateItem[]>({ path: '/maintenias/v1/templates' }),
         ]);
 
         setPages(fetchedPages);
@@ -65,7 +64,7 @@ const App = () => {
   const persistSettings = async (nextSettings: Settings) => {
     setSettings(nextSettings);
     await apiFetch<Settings>({
-      path: '/settings',
+      path: '/maintenias/v1/settings',
       method: 'POST',
       data: nextSettings,
     });
@@ -79,7 +78,11 @@ const App = () => {
 
   return (
     <div className="mt-5 mx-2 bg-white rounded-lg">
-      <Header maintenanceMode={settings.enabled} onToggle={(enabled) => persistSettings({ ...settings, enabled })} previewUrl={previewUrl} />
+      <Header
+        maintenanceMode={settings.enabled}
+        onToggle={(enabled) => persistSettings({ ...settings, enabled })}
+        previewUrl={previewUrl}
+      />
       <div className="p-4">
         <Index
           pages={pages}
