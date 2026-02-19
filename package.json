@@ -1,7 +1,7 @@
 {
 	"name": "maintenias",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Maintenias is a WordPress plugin that helps you to manage your maintenance mode.",
 	"main": "index.tsx",
 	"scripts": {
 		"build": "wp-scripts build",
@@ -12,14 +12,13 @@
 		"test:e2e": "wp-scripts test-e2e",
 		"test:unit": "wp-scripts test-unit-js --config jest-unit.config.js"
 	},
-	"keywords": [],
+	"keywords": ["wordpress", "plugin", "maintenance mode"],
 	"author": "Arafat Islam",
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.2.0",
 		"@wordpress/scripts": "^29.0.0",
 		"react": "^18.3.1",
-		"react-router-dom": "^6.26.2",
 		"tailwind-merge": "^2.5.3",
 		"tailwindcss": "^4.2.0"
 	},
