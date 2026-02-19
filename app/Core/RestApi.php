@@ -51,6 +51,24 @@ class RestApi {
 					'methods'             => 'POST',
 					'callback'            => [ $this, 'update_settings' ],
 					'permission_callback' => [ $this, 'can_manage_settings' ],
+					'args'                => [
+						'enabled'       => [
+							'type'              => 'boolean',
+							'sanitize_callback' => 'rest_sanitize_boolean',
+						],
+						'pageId'        => [
+							'type'              => 'integer',
+							'sanitize_callback' => 'absint',
+						],
+						'selectionType' => [
+							'type'              => 'string',
+							'sanitize_callback' => 'sanitize_key',
+						],
+						'templateSlug'  => [
+							'type'              => 'string',
+							'sanitize_callback' => 'sanitize_key',
+						],
+					],
 				],
 			]
 		);
@@ -103,8 +121,7 @@ class RestApi {
 	 */
 	public function update_settings( WP_REST_Request $request ): WP_REST_Response {
 		$current_settings = $this->normalize_settings( get_option( self::OPTION_KEY, [] ) );
-		$params           = $request->get_json_params();
-		$params           = is_array( $params ) ? $params : [];
+		$params = $request->get_params();
 
 		$selection_type = $this->sanitize_selection_type(
 			isset( $params['selectionType'] ) ? $params['selectionType'] : $current_settings['selectionType']
@@ -113,9 +130,10 @@ class RestApi {
 			isset( $params['templateSlug'] ) ? $params['templateSlug'] : $current_settings['templateSlug']
 		);
 		$page_id        = $this->sanitize_page_id( isset( $params['pageId'] ) ? $params['pageId'] : $current_settings['pageId'] );
+		$enabled        = isset( $params['enabled'] ) ? rest_sanitize_boolean( $params['enabled'] ) : $current_settings['enabled'];
 
 		$updated_settings = [
-			'enabled'       => isset( $params['enabled'] ) ? (bool) $params['enabled'] : $current_settings['enabled'],
+			'enabled'       => $enabled,
 			'pageId'        => 'template' === $selection_type ? 0 : $page_id,
 			'selectionType' => $selection_type,
 			'templateSlug'  => $template_slug,
