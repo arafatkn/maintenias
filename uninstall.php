@@ -23,3 +23,23 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+$option_key = 'maintenias_settings';
+
+if ( is_multisite() ) {
+	$site_ids = get_sites(
+		[
+			'fields' => 'ids',
+		]
+	);
+
+	foreach ( $site_ids as $site_id ) {
+		switch_to_blog( (int) $site_id );
+		delete_option( $option_key );
+		restore_current_blog();
+	}
+
+	delete_site_option( $option_key );
+} else {
+	delete_option( $option_key );
+}

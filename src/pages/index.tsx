@@ -1,10 +1,7 @@
-import { useMemo } from '@wordpress/element';
-
 export type PageItem = {
   id: number;
   title: string;
   permalink: string;
-  preview: string | null;
 };
 
 export type TemplateItem = {
@@ -29,6 +26,8 @@ const templateTone: Record<string, string> = {
   minimal: 'from-slate-100 to-slate-300',
 };
 
+import { useState } from '@wordpress/element';
+
 export const Index = ({
   pages,
   templates,
@@ -38,7 +37,8 @@ export const Index = ({
   onSelectPage,
   onSelectTemplate,
 }: Props) => {
-  const hasPreview = useMemo(() => pages.some((page) => !!page.preview), [pages]);
+  const [pendingPageId, setPendingPageId] = useState<number>(selectedPageId);
+  const canSave = pendingPageId > 0 && (pendingPageId !== selectedPageId || selectionType !== 'page');
 
   return (
     <div className="space-y-8">
@@ -51,8 +51,8 @@ export const Index = ({
               key={template.slug}
               className={`border rounded-lg p-3 text-left transition ${
                 selectionType === 'template' && selectedTemplateSlug === template.slug
-                  ? 'border-blue-500 ring-2 ring-blue-100'
-                  : 'border-gray-200'
+                  ? 'border-blue-500 ring-2 ring-blue-200'
+                  : 'border-gray-200 hover:border-gray-300'
               }`}
               onClick={() => onSelectTemplate(template.slug)}
             >
@@ -74,42 +74,34 @@ export const Index = ({
           Select a published page (editable via Gutenberg) and use it as your maintenance page.
         </p>
 
-        {pages.length === 0 && <div className="text-sm text-gray-500">No published pages found.</div>}
-
-        {hasPreview ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pages.map((page) => (
-              <button
-                key={page.id}
-                className={`border rounded-lg p-3 text-left transition ${
-                  selectionType === 'page' && selectedPageId === page.id
-                    ? 'border-blue-500 ring-2 ring-blue-100'
-                    : 'border-gray-200'
-                }`}
-                onClick={() => onSelectPage(page.id)}
-              >
-                {page.preview ? (
-                  <img src={page.preview} alt={page.title} className="rounded-md w-full h-36 object-cover mb-3" />
-                ) : (
-                  <div className="rounded-md w-full h-36 bg-gray-100 mb-3" />
-                )}
-                <div className="font-medium">{page.title || '(No title)'}</div>
-              </button>
-            ))}
-          </div>
+        {pages.length === 0 ? (
+          <p className="text-sm text-gray-500">No published pages found.</p>
         ) : (
-          <div className="space-y-2">
-            {pages.map((page) => (
-              <button
-                key={page.id}
-                className={`w-full border rounded-lg px-3 py-2 text-left ${
-                  selectionType === 'page' && selectedPageId === page.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}
-                onClick={() => onSelectPage(page.id)}
-              >
-                {page.title || '(No title)'}
-              </button>
-            ))}
+          <div className="flex gap-3 max-w-md">
+            <select
+              className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+              value={pendingPageId}
+              onChange={(e) => setPendingPageId(Number(e.target.value))}
+            >
+              <option value={0}>Select a page</option>
+              {pages.map((page) => (
+                <option key={page.id} value={page.id}>
+                  {page.title || '(No title)'}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={!canSave}
+              onClick={() => onSelectPage(pendingPageId)}
+              className={`rounded-lg px-5 py-3 text-sm font-medium transition ${
+                canSave
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              Save
+            </button>
           </div>
         )}
       </section>
