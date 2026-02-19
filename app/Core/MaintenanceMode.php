@@ -37,10 +37,9 @@ class MaintenanceMode {
 			return;
 		}
 
-		status_header( 503 );
-		nocache_headers();
-
 		if ( 'template' === $selection_type ) {
+			status_header( 503 );
+			nocache_headers();
 			$this->render_template( $template_slug );
 			exit;
 		}
@@ -72,6 +71,9 @@ class MaintenanceMode {
 			wp_reset_postdata();
 			return;
 		}
+
+		status_header( 503 );
+		nocache_headers();
 
 		include get_query_template( 'page' );
 		exit;

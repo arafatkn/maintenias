@@ -104,20 +104,19 @@ class RestApi {
 	public function update_settings( WP_REST_Request $request ): WP_REST_Response {
 		$current_settings = $this->normalize_settings( get_option( self::OPTION_KEY, [] ) );
 		$params           = $request->get_json_params();
-		$selection_type   = isset( $params['selectionType'] ) ? sanitize_key( $params['selectionType'] ) : $current_settings['selectionType'];
-		$template_slug    = isset( $params['templateSlug'] ) ? sanitize_key( $params['templateSlug'] ) : $current_settings['templateSlug'];
+		$params           = is_array( $params ) ? $params : [];
 
-		if ( ! in_array( $selection_type, [ 'page', 'template' ], true ) ) {
-			$selection_type = 'page';
-		}
-
-		if ( ! in_array( $template_slug, self::BUILTIN_TEMPLATES, true ) ) {
-			$template_slug = self::BUILTIN_TEMPLATES[0];
-		}
+		$selection_type = $this->sanitize_selection_type(
+			isset( $params['selectionType'] ) ? $params['selectionType'] : $current_settings['selectionType']
+		);
+		$template_slug  = $this->sanitize_template_slug(
+			isset( $params['templateSlug'] ) ? $params['templateSlug'] : $current_settings['templateSlug']
+		);
+		$page_id        = $this->sanitize_page_id( isset( $params['pageId'] ) ? $params['pageId'] : $current_settings['pageId'] );
 
 		$updated_settings = [
 			'enabled'       => isset( $params['enabled'] ) ? (bool) $params['enabled'] : $current_settings['enabled'],
-			'pageId'        => isset( $params['pageId'] ) ? absint( $params['pageId'] ) : $current_settings['pageId'],
+			'pageId'        => 'template' === $selection_type ? 0 : $page_id,
 			'selectionType' => $selection_type,
 			'templateSlug'  => $template_slug,
 		];
@@ -195,21 +194,71 @@ class RestApi {
 	 * @return array
 	 */
 	private function normalize_settings( array $settings ): array {
-		$template_slug = isset( $settings['templateSlug'] ) ? sanitize_key( $settings['templateSlug'] ) : self::BUILTIN_TEMPLATES[0];
-		if ( ! in_array( $template_slug, self::BUILTIN_TEMPLATES, true ) ) {
-			$template_slug = self::BUILTIN_TEMPLATES[0];
-		}
-
-		$selection_type = isset( $settings['selectionType'] ) ? sanitize_key( $settings['selectionType'] ) : 'page';
-		if ( ! in_array( $selection_type, [ 'page', 'template' ], true ) ) {
-			$selection_type = 'page';
-		}
+		$selection_type = $this->sanitize_selection_type( isset( $settings['selectionType'] ) ? $settings['selectionType'] : 'page' );
+		$template_slug  = $this->sanitize_template_slug( isset( $settings['templateSlug'] ) ? $settings['templateSlug'] : self::BUILTIN_TEMPLATES[0] );
+		$page_id        = $this->sanitize_page_id( isset( $settings['pageId'] ) ? $settings['pageId'] : 0 );
 
 		return [
 			'enabled'       => ! empty( $settings['enabled'] ),
-			'pageId'        => isset( $settings['pageId'] ) ? absint( $settings['pageId'] ) : 0,
+			'pageId'        => 'template' === $selection_type ? 0 : $page_id,
 			'selectionType' => $selection_type,
 			'templateSlug'  => $template_slug,
 		];
+	}
+
+	/**
+	 * Sanitize selection type.
+	 *
+	 * @param mixed $selection_type Selection type.
+	 *
+	 * @return string
+	 */
+	private function sanitize_selection_type( $selection_type ): string {
+		$selection_type = sanitize_key( (string) $selection_type );
+
+		if ( ! in_array( $selection_type, [ 'page', 'template' ], true ) ) {
+			return 'page';
+		}
+
+		return $selection_type;
+	}
+
+	/**
+	 * Sanitize template slug.
+	 *
+	 * @param mixed $template_slug Template slug.
+	 *
+	 * @return string
+	 */
+	private function sanitize_template_slug( $template_slug ): string {
+		$template_slug = sanitize_key( (string) $template_slug );
+
+		if ( ! in_array( $template_slug, self::BUILTIN_TEMPLATES, true ) ) {
+			return self::BUILTIN_TEMPLATES[0];
+		}
+
+		return $template_slug;
+	}
+
+	/**
+	 * Validate and sanitize selected page id.
+	 *
+	 * @param mixed $page_id Selected page id.
+	 *
+	 * @return int
+	 */
+	private function sanitize_page_id( $page_id ): int {
+		$page_id = absint( $page_id );
+
+		if ( ! $page_id ) {
+			return 0;
+		}
+
+		$page = get_post( $page_id );
+		if ( ! $page || 'page' !== $page->post_type || 'publish' !== $page->post_status ) {
+			return 0;
+		}
+
+		return $page_id;
 	}
 }
