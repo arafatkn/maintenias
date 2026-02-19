@@ -15,6 +15,32 @@ class MaintenanceMode {
 	 */
 	public function __construct() {
 		add_action( 'template_redirect', [ $this, 'handle_maintenance_mode' ], 1 );
+		add_action( 'template_redirect', [ $this, 'handle_template_preview' ], 0 );
+	}
+
+	/**
+	 * Handle template preview for admins.
+	 *
+	 * @return void
+	 */
+	public function handle_template_preview() {
+		if ( ! isset( $_GET['maintenias_preview'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to preview templates.', 'maintenias' ) );
+		}
+
+		$template_slug = sanitize_key( wp_unslash( $_GET['maintenias_preview'] ) );
+
+		if ( ! in_array( $template_slug, RestApi::BUILTIN_TEMPLATES, true ) ) {
+			wp_die( esc_html__( 'Invalid template.', 'maintenias' ) );
+		}
+
+		nocache_headers();
+		$this->render_template( $template_slug );
+		exit;
 	}
 
 	/**

@@ -80,11 +80,15 @@ const App = () => {
   }, []);
 
   const selectedPage = useMemo(() => pages.find((page) => page.id === settings.pageId), [pages, settings.pageId]);
+  const selectedTemplate = useMemo(
+    () => templates.find((t) => t.slug === settings.templateSlug),
+    [templates, settings.templateSlug]
+  );
 
   const persistSettings = async (nextSettings: Settings) => {
     clearSaveNoticeTimeout();
     setSettings(nextSettings);
-    setSaveNotice({ type: 'saving', message: 'Saving changes...' });
+    setSaveNotice({ type: 'saving', message: 'Saving...' });
 
     try {
       const updatedSettings = await apiFetch<Settings>({
@@ -94,36 +98,56 @@ const App = () => {
       });
 
       setSettings(updatedSettings);
-      setSaveNotice({ type: 'success', message: 'Changes saved.' });
+      setSaveNotice({ type: 'success', message: 'Saved successfully!' });
       saveNoticeTimeoutRef.current = window.setTimeout(() => {
         setSaveNotice({ type: 'idle', message: '' });
       }, 2500);
     } catch {
-      setSaveNotice({ type: 'error', message: 'Failed to save changes. Please try again.' });
+      setSaveNotice({ type: 'error', message: 'Failed to save. Please try again.' });
     }
   };
 
-  const previewUrl = settings.selectionType === 'page' ? selectedPage?.permalink : undefined;
+  const previewUrl =
+    settings.selectionType === 'page' ? selectedPage?.permalink : selectedTemplate?.previewUrl;
 
   if (loading) {
     return <Loader height="60vh" />;
   }
 
   return (
-    <div className="mt-5 mx-2 bg-white rounded-lg">
-      <Header
-        maintenanceMode={settings.enabled}
-        onToggle={(enabled) => persistSettings({ ...settings, enabled })}
-        previewUrl={previewUrl}
-      />
+    <>
+      <div className="mt-5 mx-2 bg-white rounded-lg">
+        <Header
+          maintenanceMode={settings.enabled}
+          onToggle={(enabled) => persistSettings({ ...settings, enabled })}
+          previewUrl={previewUrl}
+        />
+        {settings.enabled && (
+          <div className="mx-4 mt-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+            Maintenance mode is active. Logged-in administrators can still access the site normally.
+          </div>
+        )}
+        <div className="p-4">
+          <Index
+            pages={pages}
+            templates={templates}
+            selectionType={settings.selectionType}
+            selectedPageId={settings.pageId}
+            selectedTemplateSlug={settings.templateSlug}
+            onSelectPage={(pageId) => persistSettings({ ...settings, pageId, selectionType: 'page' })}
+            onSelectTemplate={(slug) => persistSettings({ ...settings, templateSlug: slug, selectionType: 'template' })}
+          />
+        </div>
+      </div>
+
       {saveNotice.type !== 'idle' && (
         <div
-          className={`mx-4 mt-4 rounded-md px-3 py-2 text-sm ${
+          className={`fixed top-12 right-4 z-50 max-w-sm rounded-lg px-4 py-3 text-sm shadow-lg ${
             saveNotice.type === 'saving'
-              ? 'bg-blue-50 text-blue-700'
+              ? 'bg-white text-gray-700 border border-gray-200'
               : saveNotice.type === 'success'
-                ? 'bg-green-50 text-green-700'
-                : 'bg-red-50 text-red-700'
+                ? 'bg-green-600 text-white'
+                : 'bg-red-600 text-white'
           }`}
           role="status"
           aria-live="polite"
@@ -131,18 +155,7 @@ const App = () => {
           {saveNotice.message}
         </div>
       )}
-      <div className="p-4">
-        <Index
-          pages={pages}
-          templates={templates}
-          selectionType={settings.selectionType}
-          selectedPageId={settings.pageId}
-          selectedTemplateSlug={settings.templateSlug}
-          onSelectPage={(pageId) => persistSettings({ ...settings, pageId, selectionType: 'page' })}
-          onSelectTemplate={(slug) => persistSettings({ ...settings, templateSlug: slug, selectionType: 'template' })}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

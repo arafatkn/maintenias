@@ -8,6 +8,8 @@ export type TemplateItem = {
   slug: string;
   name: string;
   description: string;
+  previewUrl: string;
+  previewImage: string;
 };
 
 interface Props {
@@ -19,12 +21,6 @@ interface Props {
   onSelectPage: (pageId: number) => void;
   onSelectTemplate: (slug: string) => void;
 }
-
-const templateTone: Record<string, string> = {
-  classic: 'from-blue-500 to-indigo-500',
-  split: 'from-slate-900 to-blue-700',
-  minimal: 'from-slate-100 to-slate-300',
-};
 
 import { useState } from '@wordpress/element';
 
@@ -45,25 +41,38 @@ export const Index = ({
       <section>
         <div className="font-semibold text-base mb-1">Built-in maintenance templates</div>
         <p className="text-sm text-gray-500 mb-4">Choose one of the ready-made designs for instant setup.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {templates.map((template) => (
-            <button
+            <div
               key={template.slug}
-              className={`border rounded-lg p-3 text-left transition ${
+              className={`border rounded-lg p-3 transition ${
                 selectionType === 'template' && selectedTemplateSlug === template.slug
                   ? 'border-blue-500 ring-2 ring-blue-200'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
-              onClick={() => onSelectTemplate(template.slug)}
             >
-              <div
-                className={`rounded-md w-full h-28 mb-3 bg-gradient-to-br ${
-                  templateTone[template.slug] || 'from-slate-100 to-slate-300'
-                }`}
-              />
-              <div className="font-medium">{template.name}</div>
-              <p className="text-xs text-gray-500 mt-1">{template.description}</p>
-            </button>
+              <button
+                type="button"
+                className="w-full text-left"
+                onClick={() => onSelectTemplate(template.slug)}
+              >
+                <img
+                  src={template.previewImage}
+                  alt={template.name}
+                  className="rounded-md w-full mb-3 bg-gray-100"
+                />
+                <div className="font-medium">{template.name}</div>
+                <p className="text-xs text-gray-500 mt-1">{template.description}</p>
+              </button>
+              <a
+                href={template.previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-xs text-blue-600 hover:text-blue-800"
+              >
+                Preview &rarr;
+              </a>
+            </div>
           ))}
         </div>
       </section>

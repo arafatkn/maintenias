@@ -23,6 +23,11 @@ class RestApi {
 		'classic',
 		'split',
 		'minimal',
+		'bold',
+		'countdown',
+		'gradient',
+		'corporate',
+		'elegant',
 	];
 
 	/**
@@ -183,21 +188,65 @@ class RestApi {
 	 * @return WP_REST_Response
 	 */
 	public function get_templates(): WP_REST_Response {
+		$preview_base = home_url( '?maintenias_preview=' );
+		$image_base   = MAINTENIAS_ASSETS . '/images/templates/';
+
 		$templates = [
 			[
-				'slug'        => 'classic',
-				'name'        => __( 'Classic Maintenance', 'maintenias' ),
-				'description' => __( 'A centered, clean maintenance message with soft gradient background.', 'maintenias' ),
+				'slug'         => 'classic',
+				'name'         => __( 'Classic Maintenance', 'maintenias' ),
+				'description'  => __( 'A centered, clean maintenance message with soft gradient background.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'classic',
+				'previewImage' => $image_base . 'classic.jpg',
 			],
 			[
-				'slug'        => 'split',
-				'name'        => __( 'Split Layout', 'maintenias' ),
-				'description' => __( 'A bold split screen message with highlighted status panel.', 'maintenias' ),
+				'slug'         => 'split',
+				'name'         => __( 'Split Layout', 'maintenias' ),
+				'description'  => __( 'A bold split screen message with highlighted status panel.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'split',
+				'previewImage' => $image_base . 'split.jpg',
 			],
 			[
-				'slug'        => 'minimal',
-				'name'        => __( 'Minimal Notice', 'maintenias' ),
-				'description' => __( 'A simple and minimal maintenance notice.', 'maintenias' ),
+				'slug'         => 'minimal',
+				'name'         => __( 'Minimal Notice', 'maintenias' ),
+				'description'  => __( 'A simple and minimal maintenance notice.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'minimal',
+				'previewImage' => $image_base . 'minimal.jpg',
+			],
+			[
+				'slug'         => 'bold',
+				'name'         => __( 'Bold', 'maintenias' ),
+				'description'  => __( 'A dark, bold design with large typography.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'bold',
+				'previewImage' => $image_base . 'bold.jpg',
+			],
+			[
+				'slug'         => 'countdown',
+				'name'         => __( 'Countdown', 'maintenias' ),
+				'description'  => __( 'Coming soon page with a countdown timer.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'countdown',
+				'previewImage' => $image_base . 'countdown.jpg',
+			],
+			[
+				'slug'         => 'gradient',
+				'name'         => __( 'Gradient', 'maintenias' ),
+				'description'  => __( 'Colorful gradient background with centered message.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'gradient',
+				'previewImage' => $image_base . 'gradient.jpg',
+			],
+			[
+				'slug'         => 'corporate',
+				'name'         => __( 'Corporate', 'maintenias' ),
+				'description'  => __( 'Professional business style with contact info.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'corporate',
+				'previewImage' => $image_base . 'corporate.jpg',
+			],
+			[
+				'slug'         => 'elegant',
+				'name'         => __( 'Elegant', 'maintenias' ),
+				'description'  => __( 'Sophisticated serif typography on dark background.', 'maintenias' ),
+				'previewUrl'   => $preview_base . 'elegant',
+				'previewImage' => $image_base . 'elegant.jpg',
 			],
 		];
 
