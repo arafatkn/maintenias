@@ -13,16 +13,17 @@
  * @package           Maintenias
  *
  * @wordpress-plugin
- * Plugin Name:       Maintenias - Maintenance, Coming Soon & Under Construction Mode
- * Plugin URI:        https://github.com/arafatkn/maintenias
- * Description:       A simple and easy to use plugin to enable maintenance, coming soon and under construction mode.
- * Version:           1.0.0
- * Author:            Arafat Islam
- * Author URI:        https://arafat.im/
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       maintenias
- * Domain Path:       /languages
+ * Plugin Name: Maintenias - Maintenance, Coming Soon & Under Construction Mode
+ * Plugin Slug: maintenias
+ * Plugin URI: https://github.com/arafatkn/maintenias
+ * Description: A simple and easy to use plugin to enable maintenance, coming soon and under construction mode.
+ * Version: 1.0.0
+ * Author: Arafat Islam
+ * Author URI: https://arafat.im/
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: maintenias
+ * Domain Path: /languages
  */
 
 // If this file is called directly, abort.
@@ -281,8 +282,7 @@ final class Maintenias {
 	 * @return array
 	 */
 	public function plugin_action_links( $links ): array {
-		$links[] = '<a href="' . admin_url( 'admin.php?page=maintenias#/settings' ) . '">' . __( 'Settings', 'maintenias' ) . '</a>';
-		$links[] = '<a href="https://github.com/arafatkn/wp-maintenias" target="_blank">' . __( 'Documentation', 'maintenias' ) . '</a>';
+		$links[] = '<a href="' . admin_url( 'admin.php?page=maintenias' ) . '">' . __( 'Settings', 'maintenias' ) . '</a>';
 
 		return $links;
 	}

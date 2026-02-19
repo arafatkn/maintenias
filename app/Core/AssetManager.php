@@ -2,6 +2,8 @@
 
 namespace Arafatkn\Maintenias\Core;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
  * Asset Manager class.
  *
